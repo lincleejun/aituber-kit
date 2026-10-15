@@ -43,6 +43,7 @@ export const VoiceEngineSelector = ({
             <option value="openai">{t('UsingOpenAITTS')}</option>
           )}
           <option value="azure">{t('UsingAzureTTS')}</option>
+          <option value="edge">{t('UsingEdgeTTS')}</option>
         </select>
       </div>
     </>

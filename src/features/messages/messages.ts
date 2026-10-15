@@ -1,3 +1,5 @@
+import type { Viseme } from '@/features/lipSync/visemes'
+
 export type Message = {
   id?: string
   role: string // "assistant" | "system" | "user";
@@ -27,6 +29,8 @@ export type Talk = {
   message: string
   buffer?: ArrayBuffer
   motion?: string
+  /** TTSが返した口形タイムライン（Edge TTSのみ）。VRMはこれがあれば音量ではなくvisemeで口を動かす */
+  visemes?: Viseme[]
 }
 
 export const splitSentence = (text: string): string[] => {

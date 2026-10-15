@@ -123,6 +123,7 @@ export type AIVoice =
   | 'cartesia'
   | 'openai'
   | 'azure'
+  | 'edge'
 
 export type Language = (typeof LANGUAGES)[number]
 

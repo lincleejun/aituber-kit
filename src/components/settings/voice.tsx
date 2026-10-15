@@ -15,6 +15,7 @@ import {
   CartesiaSettings,
   OpenAITTSSettings,
   AzureTTSSettings,
+  EdgeTTSSettings,
   TestVoiceSection,
 } from './voice/index'
 
@@ -30,6 +31,7 @@ const Voice = () => {
   const selectVoice = settingsStore((s) => s.selectVoice)
   const koeiroParam = settingsStore((s) => s.koeiroParam)
   const googleTtsType = settingsStore((s) => s.googleTtsType)
+  const edgeTtsVoice = settingsStore((s) => s.edgeTtsVoice)
   const voicevoxSpeaker = settingsStore((s) => s.voicevoxSpeaker)
   const voicevoxSpeed = settingsStore((s) => s.voicevoxSpeed)
   const voicevoxPitch = settingsStore((s) => s.voicevoxPitch)
@@ -222,6 +224,8 @@ const Voice = () => {
                 openaiTTSSpeed={openaiTTSSpeed}
               />
             )
+          } else if (selectVoice === 'edge') {
+            return <EdgeTTSSettings edgeTtsVoice={edgeTtsVoice} />
           }
         })()}
       </div>

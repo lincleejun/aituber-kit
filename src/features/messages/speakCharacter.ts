@@ -12,6 +12,7 @@ import {
 import { synthesizeVoiceCartesiaApi } from './synthesizeVoiceCartesia'
 import { synthesizeVoiceGoogleApi } from './synthesizeVoiceGoogle'
 import { synthesizeVoiceVoicevoxApi } from './synthesizeVoiceVoicevox'
+import { synthesizeVoiceEdgeApi } from './synthesizeVoiceEdge'
 import { synthesizeVoiceAivisSpeechApi } from './synthesizeVoiceAivisSpeech'
 import { synthesizeVoiceAivisCloudApi } from './synthesizeVoiceAivisCloudApi'
 import { synthesizeVoiceGSVIApi } from './synthesizeVoiceGSVI'
@@ -229,6 +230,8 @@ async function synthesizeVoice(
           ss.openaiTTSVoice,
           ss.openaiTTSSpeed
         )
+      case 'edge':
+        return await synthesizeVoiceEdgeApi(talk, ss.edgeTtsVoice)
       default:
         return null
     }
@@ -536,6 +539,7 @@ export const testVoice = async (voiceType: AIVoice, customText?: string) => {
     cartesia: 'Cartesiaを使用します',
     openai: 'OpenAI TTSを使用します',
     azure: 'Azure TTSを使用します',
+    edge: 'Edge TTSを使用します',
   }
 
   const message = customText || defaultMessages[voiceType]

@@ -119,6 +119,7 @@ interface ModelProvider extends Live2DSettings {
   selectVoice: AIVoice
   koeiroParam: KoeiroParam
   googleTtsType: string
+  edgeTtsVoice: string
   voicevoxSpeaker: string
   voicevoxSpeed: number
   voicevoxPitch: number
@@ -395,6 +396,8 @@ const getInitialValuesFromEnv = (): SettingsState => ({
   selectVoice: (process.env.NEXT_PUBLIC_SELECT_VOICE as AIVoice) || 'voicevox',
   koeiroParam: DEFAULT_PARAM,
   googleTtsType: process.env.NEXT_PUBLIC_GOOGLE_TTS_TYPE || '',
+  edgeTtsVoice:
+    process.env.NEXT_PUBLIC_EDGE_TTS_VOICE || 'zh-CN-XiaoxiaoNeural',
   voicevoxSpeaker: process.env.NEXT_PUBLIC_VOICEVOX_SPEAKER || '46',
   voicevoxSpeed:
     parseFloat(process.env.NEXT_PUBLIC_VOICEVOX_SPEED || '1.0') || 1.0,
@@ -1167,6 +1170,7 @@ export const selectPersistedSettings = (state: SettingsState) => ({
   selectVoice: state.selectVoice,
   koeiroParam: state.koeiroParam,
   googleTtsType: state.googleTtsType,
+  edgeTtsVoice: state.edgeTtsVoice,
   voicevoxSpeaker: state.voicevoxSpeaker,
   voicevoxSpeed: state.voicevoxSpeed,
   voicevoxPitch: state.voicevoxPitch,

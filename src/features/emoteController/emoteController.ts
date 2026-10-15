@@ -17,8 +17,16 @@ export class EmoteController {
     this._expressionController.playEmotion(preset)
   }
 
-  public lipSync(preset: VRMExpressionPresetName, value: number) {
-    this._expressionController.lipSync(preset, value)
+  public lipSync(weights: Partial<Record<string, number>>) {
+    this._expressionController.lipSync(weights)
+  }
+
+  public lipSyncViseme(id: number | null) {
+    this._expressionController.lipSyncViseme(id)
+  }
+
+  public get modelVisemeCount() {
+    return this._expressionController.modelVisemeCount
   }
 
   public update(delta: number) {

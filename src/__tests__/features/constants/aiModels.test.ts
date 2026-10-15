@@ -116,6 +116,11 @@ describe('aiModels', () => {
       expect(getDefaultModel('groq')).toBe('llama-3.3-70b-versatile')
     })
 
+    it('should fall back to the first model when none is marked default', () => {
+      expect(getDefaultModel('deepseek')).toBe('deepseek-chat')
+      expect(getDefaultModel('fireworks')).not.toBe('')
+    })
+
     it('should return empty string for services without defaults', () => {
       emptyServices.forEach((service) => {
         expect(getDefaultModel(service)).toBe('')

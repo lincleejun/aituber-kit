@@ -380,6 +380,14 @@ export const routePolicies = {
     secret: { kind: 'always' },
     restrictedBehavior: 'none',
   },
+  '/api/tts-edge': {
+    path: '/api/tts-edge',
+    featureName: 'tts-edge',
+    methods: ['POST'],
+    resources: ['client-proxy'],
+    secret: { kind: 'none' },
+    restrictedBehavior: 'none',
+  },
   '/api/tts-gsvi': {
     path: '/api/tts-gsvi',
     featureName: 'tts-gsvi',

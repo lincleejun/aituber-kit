@@ -15,6 +15,7 @@ import { Talk } from '../messages/messages'
 import { PoseManager } from '@/lib/VRMAnimation/poseManager'
 import settingsStore from '@/features/stores/settings'
 import type { PlaybackObserver } from '../messages/characterRenderer'
+import { Viseme, visemeIdAt } from '../lipSync/visemes'
 
 /**
  * 3Dキャラクターを管理するクラス
@@ -27,10 +28,15 @@ export class Model {
   public currentAction?: THREE.AnimationAction
   public poseYRotationOffset: number = 0
   public poseManager: PoseManager
+  /** visemeを音声に対して前後させる補正（ms）。正の値で口が早く動く */
+  public visemeOffsetMs: number = 0
 
   private _lookAtTargetParent: THREE.Object3D
   private _lipSync?: LipSync
   private _yOffsetQuat = new THREE.Quaternion()
+  private _visemes: Viseme[] | null = null
+  private _visemeStartTime: number | null = null
+  private _speakId = 0
 
   constructor(lookAtTargetParent: THREE.Object3D) {
     this._lookAtTargetParent = lookAtTargetParent
@@ -107,15 +113,26 @@ export class Model {
       this.poseManager.resetToIdle(this)
     }
 
+    const speakId = ++this._speakId
+    this._visemes = talk.visemes?.length ? talk.visemes : null
+    this._visemeStartTime = null
+
     await new Promise((resolve) => {
       this._lipSync?.playFromArrayBuffer(
         buffer,
         () => {
+          // 停止した前の音声の終了通知が遅れて届いても、次の発話のvisemeは消さない
+          if (this._speakId === speakId) this._visemes = null
           resolve(true)
         },
         isNeedDecode,
         24000,
-        observer?.onPlaybackStart
+        () => {
+          if (this._speakId === speakId) {
+            this._visemeStartTime = this._lipSync?.audio.currentTime ?? null
+          }
+          observer?.onPlaybackStart?.()
+        }
       )
     })
   }
@@ -128,6 +145,7 @@ export class Model {
     observer?: PlaybackObserver
   ) {
     this.emoteController?.playEmotion(talk.emotion)
+    this._visemes = null
 
     if (talk.motion) {
       const poseConfig = settingsStore
@@ -154,6 +172,7 @@ export class Model {
    * 現在の音声再生を停止
    */
   public stopSpeaking() {
+    this._visemes = null
     this._lipSync?.stopCurrentPlayback()
   }
 
@@ -167,7 +186,18 @@ export class Model {
   public update(delta: number): void {
     if (this._lipSync) {
       const { volume } = this._lipSync.update()
-      this.emoteController?.lipSync('aa', this.externalLipSyncVolume ?? volume)
+      if (this._visemes && this._visemeStartTime !== null) {
+        const elapsedMs =
+          (this._lipSync.audio.currentTime - this._visemeStartTime) * 1000 +
+          this.visemeOffsetMs
+        this.emoteController?.lipSyncViseme(
+          visemeIdAt(this._visemes, elapsedMs)
+        )
+      } else {
+        // visemeが無いTTSは音量だけで口を開閉する
+        const v = this.externalLipSyncVolume ?? volume
+        this.emoteController?.lipSync({ aa: v * 0.5 })
+      }
     }
 
     this.emoteController?.update(delta)
